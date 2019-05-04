@@ -1,0 +1,30 @@
+{
+  "variables": {
+    "DATE": null,
+    "SSH_USER": "root",
+    "SSH_PASS": "ansible",
+    "HEADLESS": "true"
+  },
+  "builders": [{
+      "name": "centos7-{{ user `DATE`}}",
+      "vm_name": "centos7-{{ user `DATE`}}",
+      "type": "vmware-vmx",
+      "headless": "{{ user `HEADLESS`}}",
+      "source_path": "./output/centos7-{{ user `DATE`}}/centos7-{{ user `DATE`}}.vmx",
+      "output_directory": "./output/temp/",
+      "ssh_username": "{{ user `SSH_USER` }}",
+      "ssh_password": "{{ user `SSH_PASS` }}",
+      "shutdown_command": "/sbin/halt -h -p"
+  }],
+  "post-processors": [
+      [
+        {
+          "type": "shell-local",
+          "inline": [
+            "ovftool --diskMode=thin --name=\"centos7-{{ user `DATE`}}\" --annotation=\"{{ user `DATE`}}\" \"output/temp/centos7-{{ user `DATE`}}.vmx\" \"output/centos7-{{ user `DATE`}}.ova\"",
+            "rm -rf \"output/temp/\""
+          ]
+        }
+      ]
+  ]
+}

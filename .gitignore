@@ -1,0 +1,5 @@
+var/
+output/
+venv/
+.DS_Store
+._*

@@ -1,0 +1,51 @@
+{
+  "variables": {
+    "CENTOS7_BUILD": "centos7-{{isotime \"2006-01-02\"}}",
+    "STEP": "base",
+    "ISO_PATH": "/Users/chrisbalmer/ISO/",
+    "OUTPUT_ROOT": "./output/",
+    "HTTP_DIR": "http",
+    "SSH_USER": "root",
+    "SSH_PASS": "ansible",
+    "HEADLESS": "true"
+  },
+  "builders": [{  
+    "name": "{{ user `CENTOS7_BUILD` }}",
+    "type": "vmware-iso",
+    "guest_os_type": "rhel7-64",
+    "headless": "{{ user `HEADLESS`}}",
+    "http_directory": "{{ user `HTTP_DIR` }}",
+    "iso_url": "{{ user `ISO_PATH` }}CentOS-7-x86_64-DVD-1810.iso",
+    "output_directory": "{{ user `OUTPUT_ROOT` }}enterpriselinux-{{ user `STEP` }}/{{ user `CENTOS7_BUILD` }}",
+    "iso_checksum": "6d44331cc4f6c506c7bbe9feb8468fad6c51a88ca1393ca6b8b486ea04bec3c1",
+    "iso_checksum_type": "sha256",
+    "disk_size": "16384",
+    "ssh_username": "{{ user `SSH_USER` }}",
+    "ssh_password": "{{ user `SSH_PASS` }}",
+    "ssh_port": 22,
+    "ssh_wait_timeout": "10000s",
+    "shutdown_command": "/sbin/halt -h -p",
+    "tools_upload_flavor": "linux",
+    "boot_command": [
+      "<tab> append initrd=initrd.img inst.text inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks_centos7x.cfg<enter><wait>"
+    ],
+    "boot_wait": "20s",
+    "vm_name": "{{ user `CENTOS7_BUILD` }}",
+    "cpus": 2,
+    "cores": 1,
+    "memory": 2048,
+    "network_adapter_type": "vmxnet3",
+    "version": "11"
+  }],
+  "provisioners": [{
+      "type": "shell",
+      "scripts":
+      [
+        "scripts/update_os.sh",
+        "scripts/vmware.sh",
+        "scripts/fix_net.sh",
+        "scripts/clean_up.sh"
+      ]
+    }
+  ]
+}
